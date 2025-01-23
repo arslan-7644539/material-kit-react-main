@@ -11,18 +11,73 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 import { Iconify } from 'src/components/iconify';
+import supabase from 'src/lib/supabase';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
 export function SignUpView(): JSX.Element {
   const router = useRouter();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+  });
 
-  const handleSignUp = useCallback(() => {
-    // Navigate to a welcome or home page after sign-up
-    router.push('/welcome');
-  }, [router]);
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: formData.email,
+      password: formData.password,
+      options: {
+        emailRedirectTo: 'http://localhost:5173/login',
+      },
+    });
+    if (signUpError) {
+      console.log(signUpError);
+    } else {
+      console.log(signUpData);
+      const { data: insertData, error: insertError } = await supabase
+        .from('users')
+        .insert([
+          {
+            email: formData.email,
+            username: formData.fullName,
+            password: formData.password,
+            uid: signUpData?.user?.id,
+          },
+        ])
+        .select();
+      if (insertError) {
+        console.log(insertError);
+      } else {
+        console.log(insertData);
+        setFormData({
+          fullName: '',
+          email: '',
+          password: '',
+        });
+        toast.success('Successfully SignUp!', {
+          position: 'top-right',
+        });
+        navigate('/sign-in');
+      }
+    }
+
+    // router.push('/welcome');
+  };
+
+  const changeHandler = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
 
   const renderForm = (
     <Box display="flex" flexDirection="column" alignItems="flex-end">
@@ -30,7 +85,8 @@ export function SignUpView(): JSX.Element {
         fullWidth
         name="fullName"
         label="Full Name"
-        defaultValue=""
+        onChange={changeHandler}
+        value={formData.fullName}
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 3 }}
       />
@@ -39,7 +95,8 @@ export function SignUpView(): JSX.Element {
         fullWidth
         name="email"
         label="Email Address"
-        defaultValue=""
+        onChange={changeHandler}
+        value={formData.email}
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 3 }}
       />
@@ -48,7 +105,8 @@ export function SignUpView(): JSX.Element {
         fullWidth
         name="password"
         label="Password"
-        defaultValue=""
+        onChange={changeHandler}
+        value={formData.password}
         InputLabelProps={{ shrink: true }}
         type={showPassword ? 'text' : 'password'}
         InputProps={{
@@ -82,7 +140,7 @@ export function SignUpView(): JSX.Element {
         <Typography variant="h5">Sign up</Typography>
         <Typography variant="body2" color="text.secondary">
           Already have an account?
-          <Link variant="subtitle2" sx={{ ml: 0.5 }} onClick={() => router.push('/signin')}>
+          <Link variant="subtitle2" sx={{ ml: 0.5 }} onClick={() => router.push('/sign-in')}>
             Sign in
           </Link>
         </Typography>

@@ -12,17 +12,89 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
+import supabase from 'src/lib/supabase';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
   const router = useRouter();
+  const navigate = useNavigate()
 
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    email:"",
+    password:"",
+  });
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    const {error: loginError} = await supabase.auth.signInWithPassword({
+      email: formData.email,
+      password: formData.password,
+    });
+    if (loginError) {
+      console.log(loginError);
+      toast.error("Incorrect password.", {
+        position: "top-right",
+      });
+      return;
+    }
+
+    let { data: users, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("email", formData.email);
+
+  if (error) {
+    console.log(error);
+    return;
+  }
+  if (users.length > 0) {
+    const user = users[0];
+
+    switch (user.role) {
+      case null:
+      case "":
+      case undefined:
+        navigate("/");
+        break;
+
+      case "user":
+        navigate("/");
+        break;
+
+      case "admin":
+        navigate("/");
+        break;
+
+      default:
+        console.warn("Unexpected role:", users.role);
+        navigate("/"); // Optional: Redirect to a safe default
+        break;
+    }
+    toast.success("Successfully Logged In!", {
+      position: "top-right",
+    });
+  } else {
+    console.log("user not found");
+    toast.error("credentials invalid", {
+      position: "top-right",
+    });
+  }
+
+    // router.push('/');
+  };
+
+  const changeHandler = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
 
   const renderForm = (
     <Box display="flex" flexDirection="column" alignItems="flex-end">
@@ -30,7 +102,8 @@ export function SignInView() {
         fullWidth
         name="email"
         label="Email address"
-        defaultValue="hello@gmail.com"
+        onChange={changeHandler}
+        value={formData.email}
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 3 }}
       />
@@ -43,7 +116,8 @@ export function SignInView() {
         fullWidth
         name="password"
         label="Password"
-        defaultValue="@demo1234"
+        onChange={changeHandler}
+        value={formData.password}
         InputLabelProps={{ shrink: true }}
         type={showPassword ? 'text' : 'password'}
         InputProps={{
