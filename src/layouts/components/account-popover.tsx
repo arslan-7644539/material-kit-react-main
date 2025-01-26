@@ -19,7 +19,8 @@ import { _myAccount } from 'src/_mock';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'src/context/AuthContext';
-import { supabase } from 'src/supabase/lib';
+import { supabase } from 'src/auth/context/supabase/lib';
+// import { supabase } from 'src/supabase/lib';
 
 // ----------------------------------------------------------------------
 
