@@ -12,9 +12,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
-import supabase from 'src/lib/supabase';
+// import supabase from 'src/lib/supabase';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from 'src/supabase/lib';
 
 // ----------------------------------------------------------------------
 

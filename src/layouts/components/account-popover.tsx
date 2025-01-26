@@ -15,10 +15,11 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { useRouter, usePathname } from 'src/routes/hooks';
 
 import { _myAccount } from 'src/_mock';
-import supabase from 'src/lib/supabase';
+// import supabase from 'src/lib/supabase';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'src/context/AuthContext';
+import { supabase } from 'src/supabase/lib';
 
 // ----------------------------------------------------------------------
 
