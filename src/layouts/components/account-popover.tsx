@@ -20,6 +20,7 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from 'src/context/AuthContext';
 import { supabase } from 'src/auth/context/supabase/lib';
+import { useAuthContext } from 'src/auth/hooks';
 // import { supabase } from 'src/supabase/lib';
 
 // ----------------------------------------------------------------------
@@ -35,6 +36,7 @@ export type AccountPopoverProps = IconButtonProps & {
 
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
+  const {logout} = useAuthContext()
   const navigate = useNavigate()
   // const {setSession} = useContext(AuthContext)
 
@@ -59,15 +61,15 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
   );
 
   async function signOut() {
-    const { error } = await supabase.auth.signOut();
+ try {
+  await logout()
+  navigate('/')
+ } catch (error) {
+  console.error(error);
+ }
+   
 
-    if (!error) {
-      toast.success('Successfully Logged Out!', {
-        position: 'top-right',
-      });
-      navigate('/');
-      // setSession(null);
-    }
+    
   }
 
   return (

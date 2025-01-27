@@ -3,9 +3,10 @@ import { useMemo, useEffect, useReducer, useCallback } from 'react';
 
 import { paths } from 'src/routes/paths';
 
+
 import { supabase } from './lib';
 import { AuthContext } from './auth-context';
-import { _fullName } from 'src/_mock';
+// import { _fullName } from 'src/_mock';
 
 // ----------------------------------------------------------------------
 /**
