@@ -12,8 +12,8 @@ import { Iconify } from 'src/components/iconify';
 import toast from 'react-hot-toast';
 import { useAuthContext } from 'src/auth/hooks';
 import { supabase } from 'src/auth/context/supabase/lib';
-import { useRouter } from 'src/routes/hooks';
 import { PATH_AFTER_LOGIN } from 'src/config-global';
+import { useRouter } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -21,9 +21,9 @@ export function SignInView() {
   const navigate = useNavigate();
   const { login } = useAuthContext();
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  const returnTo = searchParams.get('returnTo');
+  const [searchParams] = useSearchParams(); // Array destructuring for searchParams
+  const returnTo = searchParams.get('returnTo'); // Get query parameter
+  
 
 
   const [showPassword, setShowPassword] = useState(false);
@@ -71,10 +71,10 @@ export function SignInView() {
         // Role ke mutabiq navigation karein
         switch (user.role) {
           case 'user':
-            navigate('/dashboard');
+            navigate('/');
             break;
           case 'admin':
-            navigate('/admin');
+            navigate('/');
             break;
           default:
             console.warn('Unexpected role:', user.role);

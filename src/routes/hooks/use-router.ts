@@ -10,9 +10,9 @@ export function useRouter() {
     () => ({
       back: () => navigate(-1),
       forward: () => navigate(1),
-      refresh: () => navigate(0),
-      push: (href: string) => navigate(href),
-      replace: (href: string) => navigate(href, { replace: true }),
+      reload: () => window.location.reload(),
+      push: (href) => navigate(href),
+      replace: (href) => navigate(href, { replace: true }),
     }),
     [navigate]
   );
