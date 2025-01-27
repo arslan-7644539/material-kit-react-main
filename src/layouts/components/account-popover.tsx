@@ -36,7 +36,7 @@ export type AccountPopoverProps = IconButtonProps & {
 export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps) {
   const router = useRouter();
   const navigate = useNavigate()
-  const {setSession} = useContext(AuthContext)
+  // const {setSession} = useContext(AuthContext)
 
   const pathname = usePathname();
 
@@ -66,7 +66,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         position: 'top-right',
       });
       navigate('/');
-      setSession(null);
+      // setSession(null);
     }
   }
 

@@ -15,6 +15,8 @@ import { Iconify } from 'src/components/iconify';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from 'src/auth/context/supabase/lib';
+import { useAuthContext } from 'src/auth/hooks';
+// import { error } from 'console';
 // import { supabase } from 'src/supabase/lib';
 
 // ----------------------------------------------------------------------
@@ -22,6 +24,7 @@ import { supabase } from 'src/auth/context/supabase/lib';
 export function SignUpView(): JSX.Element {
   const router = useRouter();
   const navigate = useNavigate();
+ const {register} = useAuthContext()
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [formData, setFormData] = useState({
@@ -32,45 +35,39 @@ export function SignUpView(): JSX.Element {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-      email: formData.email,
-      password: formData.password,
-      options: {
-        emailRedirectTo: 'http://localhost:5173/login',
-      },
-    });
-    if (signUpError) {
-      console.log(signUpError);
+try {
+   await register(formData.email, formData.password, formData.fullName);
+  
+    const { data: insertData, error: insertError } = await supabase
+      .from('users')
+      .insert([
+        {
+          email: formData.email,
+          username: formData.fullName,
+          password: formData.password,
+          uid: register?.user?.id,
+        },
+      ])
+      .select();
+    if (insertError) {
+      console.log(insertError);
     } else {
-      console.log(signUpData);
-      const { data: insertData, error: insertError } = await supabase
-        .from('users')
-        .insert([
-          {
-            email: formData.email,
-            username: formData.fullName,
-            password: formData.password,
-            uid: signUpData?.user?.id,
-          },
-        ])
-        .select();
-      if (insertError) {
-        console.log(insertError);
-      } else {
-        console.log(insertData);
-        setFormData({
-          fullName: '',
-          email: '',
-          password: '',
-        });
-        toast.success('Successfully SignUp!', {
-          position: 'top-right',
-        });
-        navigate('/sign-in');
-      }
+      console.log(insertData);
+      setFormData({
+        fullName: '',
+        email: '',
+        password: '',
+      });
+      toast.success('Please Login ', {
+        position: 'top-right',
+      });
+      navigate('/sign-in');
     }
+  
+} catch (error) {
+  console.error(error)
+}
 
-    // router.push('/welcome');
   };
 
   const changeHandler = (e) => {

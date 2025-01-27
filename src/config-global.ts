@@ -19,6 +19,9 @@ export const CONFIG: ConfigValue = {
 
 export const SUPABASE_API = {
   url: import.meta.env.VITE_SUPABASE_URL,
-  key: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  key: import.meta.env.VITE_SUPABASE_KEY,
 };
+
+// ------------------------------------------
+
 

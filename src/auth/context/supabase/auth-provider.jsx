@@ -5,6 +5,7 @@ import { paths } from 'src/routes/paths';
 
 import { supabase } from './lib';
 import { AuthContext } from './auth-context';
+import { _fullName } from 'src/_mock';
 
 // ----------------------------------------------------------------------
 /**
@@ -145,14 +146,14 @@ export function AuthProvider({ children }) {
   }, []);
 
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
+  const register = useCallback(async (email, password,fullName) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}${paths.dashboard.root}`,
+        // emailRedirectTo: `${window.location.origin}${paths.dashboard.root}`,
         data: {
-          display_name: `${firstName} ${lastName}`,
+          display_name: `${fullName}`,
         },
       },
     });
