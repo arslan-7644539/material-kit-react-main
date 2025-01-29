@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Pagination from '@mui/material/Pagination';
 
-import { _posts } from 'src/_mock';
+// import { _posts } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { Iconify } from 'src/components/iconify';
@@ -15,10 +15,30 @@ import { PostItem } from '../post-item';
 import { PostSort } from '../post-sort';
 import { PostSearch } from '../post-search';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from 'src/auth/context/supabase/lib';
 
 // ----------------------------------------------------------------------
 
 export function BlogView() {
+  // ----------------------------------------------
+
+  const [blogs, setBlogs] = useState([]);
+  console.log('🚀 ~ BlogView ~ blogs:', blogs);
+
+  const fetchBlogData = async () => {
+    const { data, error } = await supabase.from('Blogs').select();
+    if (error) {
+      console.error(error);
+    } else {
+      setBlogs(data || []);
+    }
+  };
+
+  useEffect(() => {
+    fetchBlogData();
+  }, []);
+
+  // -------------------------------------------------
   const [sortBy, setSortBy] = useState('latest');
 
   const handleSort = useCallback((newSort: string) => {
@@ -48,7 +68,7 @@ export function BlogView() {
       </Box>
 
       <Box display="flex" alignItems="center" justifyContent="space-between" sx={{ mb: 5 }}>
-        <PostSearch posts={_posts} />
+        <PostSearch posts={blogs}  />
         <PostSort
           sortBy={sortBy}
           onSort={handleSort}
@@ -61,7 +81,7 @@ export function BlogView() {
       </Box>
 
       <Grid container spacing={3}>
-        {_posts.map((post, index) => {
+        {blogs.map((post, index) => {
           const latestPostLarge = index === 0;
           const latestPost = index === 1 || index === 2;
 

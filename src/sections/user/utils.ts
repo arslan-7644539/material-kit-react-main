@@ -70,10 +70,17 @@ export function applyFilter({ inputData, comparator, filterName }: ApplyFilterPr
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (filterName) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+    inputData = inputData.filter((user) =>
+      user.username?.toLowerCase().includes(filterName.toLowerCase())
     );
   }
+
+  // if (filterName) {
+  //   inputData = inputData.filter((user) => {
+  //     const userName = user.username?.toLowerCase() || '';
+  //     return userName.includes(filterName.toLowerCase());
+  //   });
+  // }
 
   return inputData;
 }
