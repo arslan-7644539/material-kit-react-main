@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -23,6 +23,7 @@ import { UserTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 import type { UserProps } from '../user-table-row';
+import { supabase } from 'src/auth/context/supabase/lib';
 
 // ----------------------------------------------------------------------
 
@@ -30,14 +31,37 @@ export function UserView() {
   const table = useTable();
 
   const [filterName, setFilterName] = useState('');
+  const [userData, setUserData]: any = useState([])
 
   const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
+    inputData: userData,
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
 
   const notFound = !dataFiltered.length && !!filterName;
+
+
+// ------------------------------------------------------------------
+
+const fetchUser = async ()=>{
+const {data, error} = await supabase
+.from('users')
+.select('*');
+if(error){
+  console.log(error);
+  
+}else{
+  console.log(data);
+  setUserData(data)
+  
+}
+}
+useEffect(() => {
+  fetchUser()
+}, [])
+// ---------------------------------------
+
 
   return (
     <DashboardContent>
@@ -76,7 +100,7 @@ export function UserView() {
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    _users.map((user) => user.id)
+                    userData.map((user) => user.id)
                   )
                 }
                 headLabel={[
@@ -105,7 +129,7 @@ export function UserView() {
 
                 <TableEmptyRows
                   height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, userData.length)}
                 />
 
                 {notFound && <TableNoData searchQuery={filterName} />}
@@ -117,7 +141,7 @@ export function UserView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={_users.length}
+          count={userData.length}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[5, 10, 25]}

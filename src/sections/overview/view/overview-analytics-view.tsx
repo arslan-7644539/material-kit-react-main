@@ -13,10 +13,78 @@ import { AnalyticsWidgetSummary } from '../analytics-widget-summary';
 import { AnalyticsTrafficBySite } from '../analytics-traffic-by-site';
 import { AnalyticsCurrentSubject } from '../analytics-current-subject';
 import { AnalyticsConversionRates } from '../analytics-conversion-rates';
+import { useEffect, useState } from 'react';
+import { supabase } from 'src/auth/context/supabase/lib';
+// import { promises } from 'dns';
 
 // ----------------------------------------------------------------------
 
 export function OverviewAnalyticsView() {
+const [feedback, setFeedback]:any = useState([])
+const [allUsers, setAllUsers]:any = useState([])
+const [allOrder, setAllOrder]:any = useState([])
+// console.log("🚀 ~ OverviewAnalyticsView ~ feedback:", feedback)
+
+  const messagesData = async (): Promise<any> => {
+    const { data, error } = await supabase
+    .from('Messages')
+    .select('*');
+    if(error){
+      console.log(error);
+      
+    }else{
+      console.log(data);
+      // const newData = data.length()
+      setFeedback(data.length)
+    }
+      console.log("🚀 ~ messagesData ~ data:", data)
+  };
+
+  useEffect(() => {
+    messagesData();
+  }, []);
+
+  // -----------------------------------------
+
+  const userData = async (): Promise<any> => {
+    const { data, error } = await supabase
+    .from('users')
+    .select('*');
+    if(error){
+      console.log(error);
+      
+    }else{
+      console.log(data);
+      // const newData = data.length()
+      setAllUsers(data.length)
+    }
+      console.log("🚀 ~ messagesData ~ data:", data)
+  };
+
+  useEffect(() => {
+    userData();
+  }, []);
+  // -----------------------------------------------------
+
+  const orderData = async (): Promise<any> => {
+    const { data, error } = await supabase
+    .from('Orders')
+    .select('*');
+    if(error){
+      console.log(error);
+      
+    }else{
+      console.log(data);
+      // const newData = data.length()
+      setAllOrder(data.length)
+    }
+      console.log("🚀 ~ messagesData ~ data:", data)
+  };
+
+  useEffect(() => {
+    orderData();
+  }, []);
+
   return (
     <DashboardContent maxWidth="xl">
       <Typography variant="h4" sx={{ mb: { xs: 3, md: 5 } }}>
@@ -41,7 +109,7 @@ export function OverviewAnalyticsView() {
           <AnalyticsWidgetSummary
             title="New users"
             percent={-0.1}
-            total={1352831}
+            total={allUsers}
             color="secondary"
             icon={<img alt="icon" src="/assets/icons/glass/ic-glass-users.svg" />}
             chart={{
@@ -55,7 +123,7 @@ export function OverviewAnalyticsView() {
           <AnalyticsWidgetSummary
             title="Purchase orders"
             percent={2.8}
-            total={1723315}
+            total={allOrder}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic-glass-buy.svg" />}
             chart={{
@@ -65,11 +133,13 @@ export function OverviewAnalyticsView() {
           />
         </Grid>
 
+        {/* ------------------------------------------------------- */}
+
         <Grid xs={12} sm={6} md={3}>
           <AnalyticsWidgetSummary
             title="Messages"
             percent={3.6}
-            total={234}
+            total={feedback}
             color="error"
             icon={<img alt="icon" src="/assets/icons/glass/ic-glass-message.svg" />}
             chart={{
