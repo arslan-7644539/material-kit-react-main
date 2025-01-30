@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -14,6 +14,7 @@ import { CartIcon } from '../product-cart-widget';
 import { ProductFilters } from '../product-filters';
 
 import type { FiltersProps } from '../product-filters';
+import { supabase } from 'src/auth/context/supabase/lib';
 
 // ----------------------------------------------------------------------
 
@@ -58,6 +59,29 @@ const defaultFilters = {
 };
 
 export function ProductsView() {
+  const [items, setItems] = useState([])
+  console.log("🚀 ~ ProductsView ~ items:", items)
+
+// ===================================================
+const itemsData = async ()=>{
+  const {data, error} = await supabase
+  .from('Products')
+  .select('*');
+  if(error){
+    console.log(error);
+    
+  }else{
+    console.log(data);
+    setItems(data)
+  }
+};
+
+useEffect(() => {
+ itemsData()
+}, [])
+
+// ===================================================
+
   const [sortBy, setSortBy] = useState('featured');
 
   const [openFilter, setOpenFilter] = useState(false);

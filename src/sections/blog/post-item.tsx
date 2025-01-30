@@ -13,6 +13,7 @@ import { varAlpha } from 'src/theme/styles';
 
 import { Iconify } from 'src/components/iconify';
 import { SvgColor } from 'src/components/svg-color';
+import { PostNoData } from './post-no-data';
 
 // ----------------------------------------------------------------------
 
@@ -37,12 +38,26 @@ export function PostItem({
   post,
   latestPost,
   latestPostLarge,
+  searchFilter,
+  searchQuerry,
   ...other
 }: CardProps & {
   post: PostItemProps;
   latestPost: boolean;
   latestPostLarge: boolean;
+  searchFilter: any;
+  searchQuerry: any;
 }) {
+  // const isMatch = !searchFilter || post.title.toLowerCase().includes(searchQuerry.toLowerCase());
+
+  // if (!isMatch) {
+  //   return <PostNoData searchQuery={searchQuerry} />;
+  // }
+
+  // if (!searchFilter) {
+  //   return <PostNoData searchQuery={searchQuerry} />;
+  // }
+
   const renderAvatar = (
     <Avatar
       alt={post.author}
